@@ -3,6 +3,7 @@
 #include <string>
 #include <regex>
 #include <map>
+#include <cstdint>
 
 
 using namespace std ;
@@ -15,31 +16,31 @@ bool isNumber(std::string x) {
 struct Page {
     int number ;
     int a, b, c ;
-    bool ending, favorable ;
 } ;
 
-int travelBook(map<int, Page> &pages, int results[], int current_page) {
-    if (results[current_page] >= 0) {
+int travelBook(map<int, Page> &pages, uint64_t results[], bool visited[], int current_page) {
+    if (visited[current_page]) {
         return results[current_page] ;
     }
 
-    int good_results = travelBook(pages, results, pages[current_page].a) +
-        travelBook(pages, results, pages[current_page].b) +
-        travelBook(pages, results, pages[current_page].c) ;
+    uint64_t good_results = travelBook(pages, results, visited, pages[current_page].a) +
+        travelBook(pages, results, visited, pages[current_page].b) +
+        travelBook(pages, results, visited, pages[current_page].c) ;
     results[current_page] = good_results ;
+    visited[current_page] = true ;
     return good_results ;
 }
 
 int main() {
 
-
     int cases ;
     cin >> cases ;
 
     for (int c = 0 ; c < cases ; c++ ) {
-        int results[401] ;
+        uint64_t results[401] ;
+        bool visited[401] ;
         for (int i = 0; i < 401; i++) {
-            results[i] = -1 ;
+            visited[i] = false ;
         }
         
         map<int, Page> pages ;
@@ -54,10 +55,8 @@ int main() {
             if (isNumber(word)) {
                 page.a = stoi(word) ;
                 cin >> page.b >> page.c ;
-                page.ending = false ;
             } else {
-                page.ending = true ;
-                page.favorable = word == "favourably" ;
+                visited[page.number] = true ;
                 if (word == "favourably") {
                     results[page.number] = 1 ;
                 } else {
@@ -67,7 +66,7 @@ int main() {
 
             pages.insert( pair<int, Page>(page.number, page) ) ;
         }
-        int good_endings = travelBook(pages, results, 1) ;
+        uint64_t good_endings = travelBook(pages, results, visited, 1) ;
         cout << good_endings << endl ;
     }
 
