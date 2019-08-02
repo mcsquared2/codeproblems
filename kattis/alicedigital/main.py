@@ -20,10 +20,6 @@ for _ in range(cases):
     mx = 0
     # print(a)
     for i in range(len(a)-1):
-        s = a[i] + m + a[i+1]
-        # print(mx, s)
-        if mx < s:
-            # print('Changing mx to {}'.format(s))
-            mx = s
+        mx = max(mx, a[i]+a[i+1])
 
-    print(mx)
+    print(mx + m) 
